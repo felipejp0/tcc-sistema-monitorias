@@ -1,27 +1,18 @@
-# TCC - Sistema de Gerenciamento de Monitorias
+# Sistema de Monitorias
 
-Projeto de Trabalho de Conclusão de Curso para desenvolvimento de um sistema de gerenciamento de monitorias acadêmicas.
+Sistema web desenvolvido para gerenciamento de monitorias acadêmicas em instituições de ensino.
 
-## Objetivo
-Permitir o gerenciamento de monitorias com três perfis de usuários:
-- Professor da disciplina
-- Aluno monitor
-- Aluno da disciplina
-
-## Funcionalidades previstas
+## Funcionalidades
 - Cadastro e autenticação de usuários
+- Gerenciamento de disciplinas
+- Criação de monitorias
 - Controle de acesso por perfil
-- Cadastro de disciplinas
-- Gerenciamento de horários de monitoria
-- Agendamento de atendimentos
-- Integração com Google Calendar
 
 ## Tecnologias
 - Python
-- FastAPI
+- Flask
 - SQLAlchemy
-- PostgreSQL
-- Google Calendar API
+- SQLite (temporário)
 
-## Status do projeto
-Em planejamento e estruturação inicial.
+## Objetivo
+Centralizar e otimizar o processo de monitorias acadêmicas.
