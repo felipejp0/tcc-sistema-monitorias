@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Nova Disciplina</h2>
+
+<form method="POST">
+    <input type="text" name="nome" placeholder="Nome da disciplina" required><br><br>
+    <input type="text" name="codigo" placeholder="Código da disciplina" required><br><br>
+    <textarea name="descricao" placeholder="Descrição"></textarea><br><br>
+    <button type="submit">Salvar</button>
+</form>
+{% endblock %}

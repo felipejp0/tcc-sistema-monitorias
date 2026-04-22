@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Disciplinas</h2>
+
+<a href="{{ url_for('main.nova_disciplina') }}">Nova disciplina</a>
+
+<hr>
+
+{% if disciplinas %}
+    <ul>
+        {% for disciplina in disciplinas %}
+            <li>
+                <strong>{{ disciplina.nome }}</strong> - {{ disciplina.codigo }}<br>
+                {{ disciplina.descricao }}<br>
+                Professor responsável: {{ disciplina.professor.nome }}
+            </li>
+            <br>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhuma disciplina cadastrada.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Dashboard</h2>
+<p>Bem-vindo, {{ usuario.nome }}</p>
+
+<ul>
+    <li><a href="{{ url_for('main.listar_disciplinas') }}">Ver disciplinas</a></li>
+    <li><a href="{{ url_for('main.nova_disciplina') }}">Cadastrar disciplina</a></li>
+    <li><a href="{{ url_for('main.logout') }}">Sair</a></li>
+</ul>
+{% endblock %}
