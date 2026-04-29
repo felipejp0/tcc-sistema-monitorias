@@ -1,0 +1,36 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Gerenciar Usuários</h2>
+
+<table border="1">
+    <tr>
+        <th>Nome</th>
+        <th>Email</th>
+        <th>Perfil Atual</th>
+        <th>Alterar Perfil</th>
+    </tr>
+
+    {% for user in usuarios %}
+    <tr>
+        <td>{{ user.nome }}</td>
+        <td>{{ user.email }}</td>
+        <td>{{ user.perfil }}</td>
+        <td>
+            <form method="POST">
+                <input type="hidden" name="user_id" value="{{ user.id }}">
+
+                <select name="perfil">
+                    <option value="aluno">Aluno</option>
+                    <option value="monitor">Monitor</option>
+                    <option value="professor">Professor</option>
+                    <option value="admin">Admin</option>
+                </select>
+
+                <button type="submit">Atualizar</button>
+            </form>
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% endblock %}

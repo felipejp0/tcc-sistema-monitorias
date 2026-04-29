@@ -2,11 +2,53 @@
 
 {% block content %}
 <h2>Dashboard</h2>
+
 <p>Bem-vindo, {{ usuario.nome }}</p>
+<p>Perfil: {{ usuario.perfil }}</p>
+
+{% if usuario.perfil == "admin" %}
+
+<ul>
+    <li><a href="{{ url_for('main.gerenciar_usuarios') }}">Gerenciar usuários</a></li>
+    <li><a href="{{ url_for('main.listar_disciplinas') }}">Ver disciplinas</a></li>
+    <li><a href="{{ url_for('main.nova_disciplina') }}">Cadastrar disciplina</a></li>
+    <li><a href="{{ url_for('main.listar_monitorias') }}">Ver monitorias</a></li>
+    <li><a href="{{ url_for('main.nova_monitoria') }}">Cadastrar monitoria</a></li>
+    <li><a href="{{ url_for('main.listar_horarios') }}">Ver horários</a></li>
+    <li><a href="{{ url_for('main.novo_horario') }}">Cadastrar horário</a></li>
+    <li><a href="{{ url_for('main.professor_atendimentos') }}">Ver todos os atendimentos</a></li>
+</ul>
+
+{% elif usuario.perfil == "professor" %}
 
 <ul>
     <li><a href="{{ url_for('main.listar_disciplinas') }}">Ver disciplinas</a></li>
     <li><a href="{{ url_for('main.nova_disciplina') }}">Cadastrar disciplina</a></li>
-    <li><a href="{{ url_for('main.logout') }}">Sair</a></li>
+    <li><a href="{{ url_for('main.listar_monitorias') }}">Ver monitorias</a></li>
+    <li><a href="{{ url_for('main.nova_monitoria') }}">Cadastrar monitoria</a></li>
+    <li><a href="{{ url_for('main.listar_horarios') }}">Ver horários</a></li>
+    <li><a href="{{ url_for('main.novo_horario') }}">Cadastrar horário</a></li>
+    <li><a href="{{ url_for('main.professor_atendimentos') }}">Atendimentos das minhas disciplinas</a></li>
 </ul>
+
+{% elif usuario.perfil == "aluno" %}
+
+<ul>
+    <li><a href="{{ url_for('main.aluno_horarios') }}">Ver horários disponíveis</a></li>
+    <li><a href="{{ url_for('main.meus_agendamentos') }}">Meus agendamentos</a></li>
+</ul>
+
+{% elif usuario.perfil == "monitor" %}
+
+<ul>
+    <li><a href="{{ url_for('main.monitor_atendimentos') }}">Meus atendimentos</a></li>
+    <li><a href="{{ url_for('main.listar_monitorias') }}">Minhas monitorias</a></li>
+    <li><a href="{{ url_for('main.listar_horarios') }}">Meus horários</a></li>
+</ul>
+
+{% endif %}
+
+<br>
+<a href="{{ url_for('main.logout') }}">Sair</a>
+
 {% endblock %}

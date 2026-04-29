@@ -1,0 +1,24 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Monitorias</h2>
+
+<a href="{{ url_for('main.nova_monitoria') }}">Nova Monitoria</a>
+
+<hr>
+
+{% if monitorias %}
+    <ul>
+        {% for monitoria in monitorias %}
+            <li>
+                <strong>Disciplina:</strong> {{ monitoria.disciplina.nome }}<br>
+                <strong>Monitor:</strong> {{ monitoria.monitor.nome }}<br>
+                <strong>Descrição:</strong> {{ monitoria.descricao }}
+            </li>
+            <br>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhuma monitoria cadastrada.</p>
+{% endif %}
+{% endblock %}

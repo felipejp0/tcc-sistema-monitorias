@@ -1,0 +1,43 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Horários de Monitoria Disponíveis</h2>
+
+{% if horarios %}
+    <table border="1">
+        <tr>
+            <th>Disciplina</th>
+            <th>Monitor</th>
+            <th>Dia</th>
+            <th>Horário</th>
+            <th>Vagas</th>
+            <th>Ação</th>
+        </tr>
+
+        {% for horario in horarios %}
+        <tr>
+            <td>{{ horario.monitoria.disciplina.nome }}</td>
+            <td>{{ horario.monitoria.monitor.nome }}</td>
+            <td>{{ horario.dia_semana }}</td>
+            <td>{{ horario.hora_inicio }} às {{ horario.hora_fim }}</td>
+            <td>
+                {{ horario.capacidade - horario.atendimentos|length }}
+                /
+                {{ horario.capacidade }}
+            </td>
+            <td>
+                {% if horario.capacidade - horario.atendimentos|length > 0 %}
+                    <a href="{{ url_for('main.agendar_atendimento', horario_id=horario.id) }}">
+                        Agendar
+                    </a>
+                {% else %}
+                    Lotado
+                {% endif %}
+            </td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Nenhum horário de monitoria disponível.</p>
+{% endif %}
+{% endblock %}

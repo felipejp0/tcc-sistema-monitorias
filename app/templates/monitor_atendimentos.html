@@ -1,0 +1,41 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Atendimentos do Monitor</h2>
+
+{% if atendimentos %}
+<table border="1">
+    <tr>
+        <th>Aluno</th>
+        <th>Disciplina</th>
+        <th>Dia</th>
+        <th>Horário</th>
+        <th>Dúvida</th>
+        <th>Status</th>
+        <th>Ação</th>
+    </tr>
+
+    {% for atendimento in atendimentos %}
+    <tr>
+        <td>{{ atendimento.aluno.nome }}</td>
+        <td>{{ atendimento.horario.monitoria.disciplina.nome }}</td>
+        <td>{{ atendimento.horario.dia_semana }}</td>
+        <td>{{ atendimento.horario.hora_inicio }} às {{ atendimento.horario.hora_fim }}</td>
+        <td>{{ atendimento.descricao_duvida }}</td>
+        <td>{{ atendimento.status }}</td>
+        <td>
+            {% if atendimento.status != "Realizado" %}
+                <a href="{{ url_for('main.concluir_atendimento', atendimento_id=atendimento.id) }}">
+                    Concluir
+                </a>
+            {% else %}
+                Finalizado
+            {% endif %}
+        </td>
+    </tr>
+    {% endfor %}
+</table>
+{% else %}
+<p>Nenhum atendimento agendado para suas monitorias.</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Horários de Monitoria</h2>
+
+<a href="{{ url_for('main.novo_horario') }}">Novo horário</a>
+
+<hr>
+
+{% if horarios %}
+    <ul>
+        {% for horario in horarios %}
+            <li>
+                <strong>{{ horario.dia_semana }}</strong> -
+                {{ horario.hora_inicio }} às {{ horario.hora_fim }}<br>
+                Disciplina: {{ horario.monitoria.disciplina.nome }}<br>
+                Monitor: {{ horario.monitoria.monitor.nome }}
+            </li>
+            <br>
+        {% endfor %}
+    </ul>
+{% else %}
+    <p>Nenhum horário cadastrado.</p>
+{% endif %}
+{% endblock %}

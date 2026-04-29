@@ -1,0 +1,27 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Nova Monitoria</h2>
+
+<form method="POST">
+    <textarea name="descricao" placeholder="Descrição da monitoria" required></textarea><br><br>
+
+    <label>Disciplina:</label><br>
+    <select name="disciplina" required>
+        <option value="">Selecione</option>
+        {% for d in disciplinas %}
+            <option value="{{ d.id }}">{{ d.nome }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <label>Monitor:</label><br>
+    <select name="monitor" required>
+        <option value="">Selecione</option>
+        {% for u in usuarios %}
+            <option value="{{ u.id }}">{{ u.nome }}</option>
+        {% endfor %}
+    </select><br><br>
+
+    <button type="submit">Criar Monitoria</button>
+</form>
+{% endblock %}

@@ -1,0 +1,31 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Meus Agendamentos</h2>
+
+{% if atendimentos %}
+    <table border="1">
+        <tr>
+            <th>Disciplina</th>
+            <th>Monitor</th>
+            <th>Dia</th>
+            <th>Horário</th>
+            <th>Dúvida</th>
+            <th>Status</th>
+        </tr>
+
+        {% for atendimento in atendimentos %}
+        <tr>
+            <td>{{ atendimento.horario.monitoria.disciplina.nome }}</td>
+            <td>{{ atendimento.horario.monitoria.monitor.nome }}</td>
+            <td>{{ atendimento.horario.dia_semana }}</td>
+            <td>{{ atendimento.horario.hora_inicio }} às {{ atendimento.horario.hora_fim }}</td>
+            <td>{{ atendimento.descricao_duvida }}</td>
+            <td>{{ atendimento.status }}</td>
+        </tr>
+        {% endfor %}
+    </table>
+{% else %}
+    <p>Você ainda não possui agendamentos.</p>
+{% endif %}
+{% endblock %}

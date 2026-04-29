@@ -4,9 +4,26 @@
 <h2>Nova Disciplina</h2>
 
 <form method="POST">
-    <input type="text" name="nome" placeholder="Nome da disciplina" required><br><br>
-    <input type="text" name="codigo" placeholder="Código da disciplina" required><br><br>
-    <textarea name="descricao" placeholder="Descrição"></textarea><br><br>
-    <button type="submit">Salvar</button>
+    <label>Nome da disciplina:</label><br>
+    <input type="text" name="nome" placeholder="Ex: Cálculo I" required>
+    <br><br>
+
+    <label>Código da disciplina:</label><br>
+    <input type="text" name="codigo" placeholder="Ex: MAT001" required>
+    <br><br>
+
+    <label>Professor responsável:</label><br>
+    <select name="professor_id" required>
+        <option value="">Selecione</option>
+
+        {% for professor in professores %}
+            <option value="{{ professor.id }}">
+                {{ professor.nome }} - {{ professor.email }}
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <button type="submit">Cadastrar disciplina</button>
 </form>
 {% endblock %}

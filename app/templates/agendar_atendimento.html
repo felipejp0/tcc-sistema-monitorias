@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Agendar Atendimento</h2>
+
+<p><strong>Disciplina:</strong> {{ horario.monitoria.disciplina.nome }}</p>
+<p><strong>Monitor:</strong> {{ horario.monitoria.monitor.nome }}</p>
+<p><strong>Dia:</strong> {{ horario.dia_semana }}</p>
+<p><strong>Horário:</strong> {{ horario.hora_inicio }} às {{ horario.hora_fim }}</p>
+
+<form method="POST">
+    <label>Descreva sua dúvida:</label><br>
+    <textarea name="descricao_duvida" required></textarea><br><br>
+
+    <button type="submit">Confirmar agendamento</button>
+</form>
+{% endblock %}

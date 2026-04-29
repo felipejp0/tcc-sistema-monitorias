@@ -1,0 +1,40 @@
+{% extends "base.html" %}
+
+{% block content %}
+<h2>Novo Horário de Monitoria</h2>
+
+<form method="POST">
+    <label>Dia da semana:</label><br>
+    <select name="dia_semana" required>
+        <option value="">Selecione</option>
+        <option value="Segunda-feira">Segunda-feira</option>
+        <option value="Terça-feira">Terça-feira</option>
+        <option value="Quarta-feira">Quarta-feira</option>
+        <option value="Quinta-feira">Quinta-feira</option>
+        <option value="Sexta-feira">Sexta-feira</option>
+        <option value="Sábado">Sábado</option>
+    </select>
+    <br><br>
+
+    <label>Hora de início:</label><br>
+    <input type="time" name="hora_inicio" required>
+    <br><br>
+
+    <label>Hora de fim:</label><br>
+    <input type="time" name="hora_fim" required>
+    <br><br>
+
+    <label>Monitoria:</label><br>
+    <select name="monitoria" required>
+        <option value="">Selecione</option>
+        {% for monitoria in monitorias %}
+            <option value="{{ monitoria.id }}">
+                {{ monitoria.disciplina.nome }} - {{ monitoria.monitor.nome }}
+            </option>
+        {% endfor %}
+    </select>
+    <br><br>
+
+    <button type="submit">Salvar</button>
+</form>
+{% endblock %}
