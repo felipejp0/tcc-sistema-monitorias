@@ -1,24 +1,76 @@
 {% extends "base.html" %}
 
+{% block page_title %}Disciplinas{% endblock %}
+
 {% block content %}
-<h2>Disciplinas</h2>
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Gestão acadêmica</span>
+        <h2>Disciplinas</h2>
+        <p>Gerencie as disciplinas vinculadas às monitorias e seus professores responsáveis.</p>
+    </div>
 
-<a href="{{ url_for('main.nova_disciplina') }}">Nova disciplina</a>
+    <div class="page-actions">
+        <a class="btn btn-large" href="{{ url_for('main.nova_disciplina') }}">Nova disciplina</a>
+    </div>
+</section>
 
-<hr>
+{% set total_monitorias = namespace(value=0) %}
+{% for disciplina in disciplinas %}
+    {% set total_monitorias.value = total_monitorias.value + disciplina.monitorias|length %}
+{% endfor %}
+
+<section class="summary-strip">
+    <div class="summary-item">
+        <span class="summary-kicker">Disciplinas</span>
+        <strong>{{ disciplinas|length }}</strong>
+        <p>cadastradas</p>
+    </div>
+
+    <div class="summary-item">
+        <span class="summary-kicker">Responsáveis</span>
+        <strong>{{ disciplinas|length }}</strong>
+        <p>professores vinculados</p>
+    </div>
+
+    <div class="summary-item">
+        <span class="summary-kicker">Monitorias</span>
+        <strong>{{ total_monitorias.value }}</strong>
+        <p>vinculadas</p>
+    </div>
+</section>
 
 {% if disciplinas %}
-    <ul>
-        {% for disciplina in disciplinas %}
-            <li>
-                <strong>{{ disciplina.nome }}</strong> - {{ disciplina.codigo }}<br>
-                {{ disciplina.descricao }}<br>
-                Professor responsável: {{ disciplina.professor.nome }}
-            </li>
-            <br>
-        {% endfor %}
-    </ul>
+<div class="section-heading">
+    <h3>Lista de disciplinas</h3>
+    <p>Disciplinas disponíveis para gestão no seu perfil.</p>
+</div>
+
+<section class="modern-grid">
+    {% for disciplina in disciplinas %}
+    <article class="modern-card">
+        <div class="card-main">
+            <span class="code-badge">{{ disciplina.codigo }}</span>
+            <h3>{{ disciplina.nome }}</h3>
+        </div>
+
+        <div class="info-box">
+            <span>Professor responsável</span>
+            <strong>{{ disciplina.professor.nome }}</strong>
+        </div>
+
+        <div class="card-footer">
+            <span>Monitorias vinculadas</span>
+            <strong>{{ disciplina.monitorias|length }}</strong>
+        </div>
+    </article>
+    {% endfor %}
+</section>
 {% else %}
-    <p>Nenhuma disciplina cadastrada.</p>
+<section class="empty-state">
+    <h3>Nenhuma disciplina cadastrada</h3>
+    <p>Cadastre a primeira disciplina para iniciar a organização das monitorias.</p>
+    <a class="btn" href="{{ url_for('main.nova_disciplina') }}">Cadastrar disciplina</a>
+</section>
 {% endif %}
 {% endblock %}

@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from flask_login import UserMixin
 from werkzeug.security import generate_password_hash, check_password_hash
 
@@ -9,12 +11,21 @@ class Usuario(UserMixin, db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(120), nullable=False)
-    email = db.Column(db.String(120), unique=True, nullable=False)
+    email = db.Column(db.String(120), unique=True, nullable=False, index=True)
     senha_hash = db.Column(db.String(255), nullable=False)
-    perfil = db.Column(db.String(20), nullable=False, default="aluno")
+
+    perfil = db.Column(
+        db.Enum("aluno", "monitor", "professor", "admin", name="perfil_usuario"),
+        nullable=False,
+        default="aluno"
+    )
+
+    ativo = db.Column(db.Boolean, nullable=False, default=True)
+    criado_em = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     disciplinas = db.relationship("Disciplina", backref="professor", lazy=True)
     monitorias_monitor = db.relationship("Monitoria", backref="monitor", lazy=True)
+    atendimentos = db.relationship("Atendimento", backref="aluno", lazy=True)
 
     def set_senha(self, senha):
         self.senha_hash = generate_password_hash(senha)
@@ -28,10 +39,15 @@ class Disciplina(db.Model):
 
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(120), nullable=False)
-    codigo = db.Column(db.String(30), nullable=False, unique=True)
-    descricao = db.Column(db.Text, nullable=True)
+    codigo = db.Column(db.String(30), nullable=False, unique=True, index=True)
 
-    professor_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    professor_id = db.Column(
+        db.Integer,
+        db.ForeignKey("usuarios.id"),
+        nullable=False
+    )
+
+    criado_em = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     monitorias = db.relationship("Monitoria", backref="disciplina", lazy=True)
 
@@ -42,8 +58,19 @@ class Monitoria(db.Model):
     id = db.Column(db.Integer, primary_key=True)
     descricao = db.Column(db.Text, nullable=False)
 
-    disciplina_id = db.Column(db.Integer, db.ForeignKey("disciplinas.id"), nullable=False)
-    monitor_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
+    disciplina_id = db.Column(
+        db.Integer,
+        db.ForeignKey("disciplinas.id"),
+        nullable=False
+    )
+
+    monitor_id = db.Column(
+        db.Integer,
+        db.ForeignKey("usuarios.id"),
+        nullable=False
+    )
+
+    criado_em = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     horarios = db.relationship("HorarioMonitoria", backref="monitoria", lazy=True)
 
@@ -52,25 +79,66 @@ class HorarioMonitoria(db.Model):
     __tablename__ = "horarios_monitoria"
 
     id = db.Column(db.Integer, primary_key=True)
-    dia_semana = db.Column(db.String(20), nullable=False)
-    hora_inicio = db.Column(db.String(5), nullable=False)
-    hora_fim = db.Column(db.String(5), nullable=False)
-    capacidade = db.Column(db.Integer, default=15)
-    monitoria_id = db.Column(db.Integer, db.ForeignKey("monitorias.id"), nullable=False)
+
+    data = db.Column(db.Date, nullable=False)
+
+    hora_inicio = db.Column(db.Time, nullable=False)
+    hora_fim = db.Column(db.Time, nullable=False)
+
+    capacidade = db.Column(db.Integer, nullable=False, default=15)
+
+    monitoria_id = db.Column(
+        db.Integer,
+        db.ForeignKey("monitorias.id"),
+        nullable=False
+    )
+
+    criado_em = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    atendimentos = db.relationship("Atendimento", backref="horario", lazy=True)
 
 
 class Atendimento(db.Model):
     __tablename__ = "atendimentos"
 
     id = db.Column(db.Integer, primary_key=True)
+
     descricao_duvida = db.Column(db.Text, nullable=False)
-    status = db.Column(db.String(20), nullable=False, default="Agendado")
 
-    aluno_id = db.Column(db.Integer, db.ForeignKey("usuarios.id"), nullable=False)
-    horario_id = db.Column(db.Integer, db.ForeignKey("horarios_monitoria.id"), nullable=False)
+    status = db.Column(
+        db.Enum("Agendado", "Cancelado", "Realizado", name="status_atendimento"),
+        nullable=False,
+        default="Agendado"
+    )
 
-    aluno = db.relationship("Usuario", backref="atendimentos")
-    horario = db.relationship("HorarioMonitoria", backref="atendimentos")
+    aluno_id = db.Column(
+        db.Integer,
+        db.ForeignKey("usuarios.id"),
+        nullable=False
+    )
+
+    horario_id = db.Column(
+        db.Integer,
+        db.ForeignKey("horarios_monitoria.id"),
+        nullable=False
+    )
+
+    criado_em = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
+
+    atualizado_em = db.Column(
+        db.DateTime,
+        nullable=False,
+        default=datetime.utcnow,
+        onupdate=datetime.utcnow
+    )
+
+    __table_args__ = (
+        db.UniqueConstraint(
+            "aluno_id",
+            "horario_id",
+            name="uq_aluno_horario"
+        ),
+    )
 
 
 @login_manager.user_loader

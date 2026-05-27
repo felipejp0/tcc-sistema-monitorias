@@ -1,24 +1,82 @@
 {% extends "base.html" %}
 
+{% block page_title %}Monitorias{% endblock %}
+
 {% block content %}
-<h2>Monitorias</h2>
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Gestão acadêmica</span>
+        <h2>Monitorias</h2>
+        <p>Visualize as monitorias cadastradas, suas disciplinas e monitores responsáveis.</p>
+    </div>
 
-<a href="{{ url_for('main.nova_monitoria') }}">Nova Monitoria</a>
+    {% if current_user.perfil in ["admin", "professor"] %}
+    <div class="page-actions">
+        <a class="btn btn-large" href="{{ url_for('main.nova_monitoria') }}">Nova monitoria</a>
+    </div>
+    {% endif %}
+</section>
 
-<hr>
+{% set total_horarios = namespace(value=0) %}
+{% for monitoria in monitorias %}
+    {% set total_horarios.value = total_horarios.value + monitoria.horarios|length %}
+{% endfor %}
+
+<section class="summary-strip">
+    <div class="summary-item">
+        <span class="summary-kicker">Monitorias</span>
+        <strong>{{ monitorias|length }}</strong>
+        <p>cadastradas</p>
+    </div>
+
+    <div class="summary-item">
+        <span class="summary-kicker">Horários</span>
+        <strong>{{ total_horarios.value }}</strong>
+        <p>cadastrados</p>
+    </div>
+
+    <div class="summary-item">
+        <span class="summary-kicker">Vínculos</span>
+        <strong>{{ monitorias|length }}</strong>
+        <p>disciplina e monitor</p>
+    </div>
+</section>
 
 {% if monitorias %}
-    <ul>
-        {% for monitoria in monitorias %}
-            <li>
-                <strong>Disciplina:</strong> {{ monitoria.disciplina.nome }}<br>
-                <strong>Monitor:</strong> {{ monitoria.monitor.nome }}<br>
-                <strong>Descrição:</strong> {{ monitoria.descricao }}
-            </li>
-            <br>
-        {% endfor %}
-    </ul>
+<div class="section-heading">
+    <h3>Monitorias cadastradas</h3>
+    <p>Vínculos entre disciplinas, monitores e horários de atendimento.</p>
+</div>
+
+<section class="modern-grid">
+    {% for monitoria in monitorias %}
+    <article class="modern-card">
+        <div class="card-main">
+            <span class="code-badge">{{ monitoria.disciplina.codigo }}</span>
+            <h3>{{ monitoria.disciplina.nome }}</h3>
+        </div>
+
+        <div class="info-box">
+            <span>Monitor responsável</span>
+            <strong>{{ monitoria.monitor.nome }}</strong>
+        </div>
+
+        <div class="info-box">
+            <span>Descrição</span>
+            <strong>{{ monitoria.descricao }}</strong>
+        </div>
+
+        <div class="card-footer">
+            <span>Horários cadastrados</span>
+            <strong>{{ monitoria.horarios|length }}</strong>
+        </div>
+    </article>
+    {% endfor %}
+</section>
 {% else %}
-    <p>Nenhuma monitoria cadastrada.</p>
+<section class="empty-state">
+    <h3>Nenhuma monitoria cadastrada</h3>
+    <p>Cadastre uma monitoria para vincular disciplina, monitor e horários.</p>
+</section>
 {% endif %}
 {% endblock %}

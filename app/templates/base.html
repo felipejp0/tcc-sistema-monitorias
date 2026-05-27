@@ -4,28 +4,104 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Sistema de Monitorias</title>
+    <link rel="stylesheet" href="{{ url_for('static', filename='css/style.css') }}">
 </head>
 <body>
-    <h1>Sistema de Monitorias</h1>
 
-    <a href="{{ url_for('main.index') }}">Home</a> |
-    <a href="{{ url_for('main.login') }}">Login</a> |
-    <a href="{{ url_for('main.dashboard') }}">Dashboard</a> |
-    <a href="{{ url_for('main.listar_disciplinas') }}">Disciplinas</a> |
-    <a href="{{ url_for('main.listar_monitorias') }}">Monitorias</a> |
-    <a href="{{ url_for('main.listar_horarios') }}">Horários</a> |
-    <a href="{{ url_for('main.logout') }}">Sair</a>
+<div class="app-shell">
 
-    <hr>
+    {% if current_user.is_authenticated %}
+    <aside class="sidebar">
+        <div class="brand">
+            <div class="brand-mark" aria-hidden="true">
+                <span class="brand-dot"></span>
+                <span class="brand-block"></span>
+                <span class="brand-block"></span>
+                <span class="brand-block"></span>
+                <span class="brand-block"></span>
+                <span class="brand-block"></span>
+                <span class="brand-block"></span>
+                <span class="brand-block"></span>
+                <span class="brand-block"></span>
+                <span class="brand-block"></span>
+            </div>
 
-    {% with messages = get_flashed_messages() %}
-        {% if messages %}
-            {% for message in messages %}
-                <p>{{ message }}</p>
-            {% endfor %}
+            <div class="brand-text">
+                <h1>Monitorias</h1>
+                <span>IFMG - Gestão Acadêmica</span>
+            </div>
+        </div>
+
+        <nav class="menu">
+            <span class="menu-label">Principal</span>
+            <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+
+            {% if current_user.perfil in ["admin", "professor"] %}
+                <span class="menu-label">Gestão</span>
+                <a href="{{ url_for('main.listar_disciplinas') }}">Disciplinas</a>
+                <a href="{{ url_for('main.listar_monitorias') }}">Monitorias</a>
+                <a href="{{ url_for('main.listar_horarios') }}">Horários</a>
+                <a href="{{ url_for('main.professor_atendimentos') }}">Atendimentos</a>
+            {% endif %}
+
+            {% if current_user.perfil == "aluno" %}
+                <span class="menu-label">Aluno</span>
+                <a href="{{ url_for('main.aluno_horarios') }}">Horários disponíveis</a>
+                <a href="{{ url_for('main.meus_agendamentos') }}">Meus agendamentos</a>
+            {% endif %}
+
+            {% if current_user.perfil == "monitor" %}
+                <span class="menu-label">Monitor</span>
+                <a href="{{ url_for('main.monitor_atendimentos') }}">Meus atendimentos</a>
+                <a href="{{ url_for('main.listar_horarios') }}">Meus horários</a>
+            {% endif %}
+
+            {% if current_user.perfil == "admin" %}
+                <span class="menu-label">Administração</span>
+                <a href="{{ url_for('main.gerenciar_usuarios') }}">Usuários</a>
+            {% endif %}
+        </nav>
+
+        <div class="user-box">
+            <div class="user-avatar">{{ current_user.nome[0]|upper }}</div>
+            <div class="user-info">
+                <strong>{{ current_user.nome }}</strong>
+                <span>{{ current_user.perfil }}</span>
+            </div>
+            <a class="logout-link" href="{{ url_for('main.logout') }}">Sair</a>
+        </div>
+    </aside>
+    {% endif %}
+
+    <main class="{% if current_user.is_authenticated %}main-content{% else %}auth-page{% endif %}">
+        {% if current_user.is_authenticated %}
+        <div class="content-inner">
+        <header class="top-header">
+            <div class="breadcrumb">
+                <a href="{{ url_for('main.dashboard') }}">Início</a>
+                <span>Sistema de Monitorias</span>
+                <strong>{% block page_title %}Painel{% endblock %}</strong>
+            </div>
+        </header>
         {% endif %}
-    {% endwith %}
 
-    {% block content %}{% endblock %}
+        {% with messages = get_flashed_messages() %}
+            {% if messages %}
+                <div class="messages">
+                    {% for message in messages %}
+                        <p>{{ message }}</p>
+                    {% endfor %}
+                </div>
+            {% endif %}
+        {% endwith %}
+
+        {% block content %}{% endblock %}
+        {% if current_user.is_authenticated %}
+        </div>
+        {% endif %}
+    </main>
+
+</div>
+
 </body>
 </html>

@@ -1,54 +1,162 @@
 {% extends "base.html" %}
 
+{% block page_title %}Dashboard{% endblock %}
+
 {% block content %}
-<h2>Dashboard</h2>
+<section class="dashboard-hero">
+    <div class="hero-copy">
+        <span class="eyebrow">Plataforma acadêmica</span>
+        <h2>Olá, {{ usuario.nome }}</h2>
+        <p>Um painel simples para acompanhar monitorias, horários e atendimentos com clareza operacional.</p>
+    </div>
 
-<p>Bem-vindo, {{ usuario.nome }}</p>
-<p>Perfil: {{ usuario.perfil }}</p>
+    <div class="hero-panel">
+        <span>Perfil ativo</span>
+        <strong>{{ usuario.perfil }}</strong>
+    </div>
+</section>
 
-{% if usuario.perfil == "admin" %}
+<section class="summary-strip">
+    {% if usuario.perfil == "admin" %}
+        <div class="summary-item">
+            <span class="summary-kicker">Usuários</span>
+            <strong>{{ total_usuarios }}</strong>
+            <p>cadastrados</p>
+        </div>
 
-<ul>
-    <li><a href="{{ url_for('main.gerenciar_usuarios') }}">Gerenciar usuários</a></li>
-    <li><a href="{{ url_for('main.listar_disciplinas') }}">Ver disciplinas</a></li>
-    <li><a href="{{ url_for('main.nova_disciplina') }}">Cadastrar disciplina</a></li>
-    <li><a href="{{ url_for('main.listar_monitorias') }}">Ver monitorias</a></li>
-    <li><a href="{{ url_for('main.nova_monitoria') }}">Cadastrar monitoria</a></li>
-    <li><a href="{{ url_for('main.listar_horarios') }}">Ver horários</a></li>
-    <li><a href="{{ url_for('main.novo_horario') }}">Cadastrar horário</a></li>
-    <li><a href="{{ url_for('main.professor_atendimentos') }}">Ver todos os atendimentos</a></li>
-</ul>
+        <div class="summary-item">
+            <span class="summary-kicker">Disciplinas</span>
+            <strong>{{ total_disciplinas }}</strong>
+            <p>registradas</p>
+        </div>
 
-{% elif usuario.perfil == "professor" %}
+        <div class="summary-item">
+            <span class="summary-kicker">Atendimentos</span>
+            <strong>{{ total_atendimentos }}</strong>
+            <p>no sistema</p>
+        </div>
 
-<ul>
-    <li><a href="{{ url_for('main.listar_disciplinas') }}">Ver disciplinas</a></li>
-    <li><a href="{{ url_for('main.nova_disciplina') }}">Cadastrar disciplina</a></li>
-    <li><a href="{{ url_for('main.listar_monitorias') }}">Ver monitorias</a></li>
-    <li><a href="{{ url_for('main.nova_monitoria') }}">Cadastrar monitoria</a></li>
-    <li><a href="{{ url_for('main.listar_horarios') }}">Ver horários</a></li>
-    <li><a href="{{ url_for('main.novo_horario') }}">Cadastrar horário</a></li>
-    <li><a href="{{ url_for('main.professor_atendimentos') }}">Atendimentos das minhas disciplinas</a></li>
-</ul>
+    {% elif usuario.perfil == "professor" %}
+        <div class="summary-item">
+            <span class="summary-kicker">Disciplinas</span>
+            <strong>{{ total_disciplinas }}</strong>
+            <p>vinculadas</p>
+        </div>
 
-{% elif usuario.perfil == "aluno" %}
+        <div class="summary-item">
+            <span class="summary-kicker">Monitorias</span>
+            <strong>{{ total_monitorias }}</strong>
+            <p>ativas</p>
+        </div>
 
-<ul>
-    <li><a href="{{ url_for('main.aluno_horarios') }}">Ver horários disponíveis</a></li>
-    <li><a href="{{ url_for('main.meus_agendamentos') }}">Meus agendamentos</a></li>
-</ul>
+        <div class="summary-item">
+            <span class="summary-kicker">Horários</span>
+            <strong>{{ total_horarios }}</strong>
+            <p>cadastrados</p>
+        </div>
 
-{% elif usuario.perfil == "monitor" %}
+    {% elif usuario.perfil == "monitor" %}
+        <div class="summary-item">
+            <span class="summary-kicker">Atendimentos</span>
+            <strong>{{ atendimentos_monitor }}</strong>
+            <p>vinculados</p>
+        </div>
 
-<ul>
-    <li><a href="{{ url_for('main.monitor_atendimentos') }}">Meus atendimentos</a></li>
-    <li><a href="{{ url_for('main.listar_monitorias') }}">Minhas monitorias</a></li>
-    <li><a href="{{ url_for('main.listar_horarios') }}">Meus horários</a></li>
-</ul>
+    {% elif usuario.perfil == "aluno" %}
+        <div class="summary-item">
+            <span class="summary-kicker">Agendamentos</span>
+            <strong>{{ meus_atendimentos }}</strong>
+            <p>registrados</p>
+        </div>
+    {% endif %}
+</section>
 
-{% endif %}
+<div class="section-heading">
+    <h3>Acessos principais</h3>
+    <p>Atalhos disponíveis para o seu perfil no sistema.</p>
+</div>
 
-<br>
-<a href="{{ url_for('main.logout') }}">Sair</a>
+<section class="modern-grid">
+    {% if usuario.perfil == "admin" %}
+        <a class="modern-card" href="{{ url_for('main.gerenciar_usuarios') }}">
+            <div class="card-main">
+                <span class="code-badge">Administração</span>
+                <h3>Usuários</h3>
+            </div>
+            <div class="info-box">
+                <span>Gerenciar perfis</span>
+                <strong>Alunos, monitores, professores e admins</strong>
+            </div>
+        </a>
 
+        <a class="modern-card" href="{{ url_for('main.nova_disciplina') }}">
+            <div class="card-main">
+                <span class="code-badge">Cadastro</span>
+                <h3>Nova disciplina</h3>
+            </div>
+            <div class="info-box">
+                <span>Gestão acadêmica</span>
+                <strong>Adicionar disciplina e responsável</strong>
+            </div>
+        </a>
+
+    {% elif usuario.perfil == "professor" %}
+        <a class="modern-card" href="{{ url_for('main.nova_monitoria') }}">
+            <div class="card-main">
+                <span class="code-badge">Monitorias</span>
+                <h3>Criar monitoria</h3>
+            </div>
+            <div class="info-box">
+                <span>Vinculação</span>
+                <strong>Associar disciplina e monitor</strong>
+            </div>
+        </a>
+
+        <a class="modern-card" href="{{ url_for('main.novo_horario') }}">
+            <div class="card-main">
+                <span class="code-badge">Disponibilidade</span>
+                <h3>Novo horário</h3>
+            </div>
+            <div class="info-box">
+                <span>Agenda</span>
+                <strong>Definir horários de atendimento</strong>
+            </div>
+        </a>
+
+    {% elif usuario.perfil == "monitor" %}
+        <a class="modern-card" href="{{ url_for('main.monitor_atendimentos') }}">
+            <div class="card-main">
+                <span class="code-badge">Monitor</span>
+                <h3>Meus atendimentos</h3>
+            </div>
+            <div class="info-box">
+                <span>Acompanhamento</span>
+                <strong>Visualizar e concluir atendimentos</strong>
+            </div>
+        </a>
+
+    {% elif usuario.perfil == "aluno" %}
+        <a class="modern-card" href="{{ url_for('main.aluno_horarios') }}">
+            <div class="card-main">
+                <span class="code-badge">Agendamento</span>
+                <h3>Horários disponíveis</h3>
+            </div>
+            <div class="info-box">
+                <span>Monitorias</span>
+                <strong>Escolher um horário para atendimento</strong>
+            </div>
+        </a>
+
+        <a class="modern-card" href="{{ url_for('main.meus_agendamentos') }}">
+            <div class="card-main">
+                <span class="code-badge">Aluno</span>
+                <h3>Meus agendamentos</h3>
+            </div>
+            <div class="info-box">
+                <span>Acompanhamento</span>
+                <strong>Consultar ou cancelar atendimentos</strong>
+            </div>
+        </a>
+    {% endif %}
+</section>
 {% endblock %}

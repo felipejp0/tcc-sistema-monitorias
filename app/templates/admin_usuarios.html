@@ -1,36 +1,89 @@
 {% extends "base.html" %}
 
-{% block content %}
-<h2>Gerenciar Usuários</h2>
+{% block page_title %}Usuários{% endblock %}
 
-<table border="1">
-    <tr>
-        <th>Nome</th>
-        <th>Email</th>
-        <th>Perfil Atual</th>
-        <th>Alterar Perfil</th>
-    </tr>
+{% block content %}
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Administração</span>
+        <h2>Gerenciar usuários</h2>
+        <p>Atualize perfis de acesso e acompanhe a distribuição dos usuários cadastrados no sistema.</p>
+    </div>
+</section>
+
+{% set total_alunos = usuarios | selectattr("perfil", "equalto", "aluno") | list | length %}
+{% set total_monitores = usuarios | selectattr("perfil", "equalto", "monitor") | list | length %}
+{% set total_professores = usuarios | selectattr("perfil", "equalto", "professor") | list | length %}
+{% set total_admins = usuarios | selectattr("perfil", "equalto", "admin") | list | length %}
+
+<section class="summary-strip">
+    <div class="summary-item">
+        <span class="summary-kicker">Total</span>
+        <strong>{{ usuarios|length }}</strong>
+        <p>usuários cadastrados</p>
+    </div>
+
+    <div class="summary-item">
+        <span class="summary-kicker">Alunos</span>
+        <strong>{{ total_alunos }}</strong>
+        <p>contas de estudante</p>
+    </div>
+
+    <div class="summary-item">
+        <span class="summary-kicker">Monitores</span>
+        <strong>{{ total_monitores }}</strong>
+        <p>contas de monitoria</p>
+    </div>
+
+    <div class="summary-item">
+        <span class="summary-kicker">Professores/Admins</span>
+        <strong>{{ total_professores + total_admins }}</strong>
+        <p>contas de gestão</p>
+    </div>
+</section>
+
+<div class="section-heading">
+    <h3>Lista de usuários</h3>
+    <p>Selecione um novo perfil e confirme a atualização individualmente.</p>
+</div>
+
+{% if usuarios %}
+<section class="users-panel">
+    <div class="users-table users-table-head">
+        <span>Usuário</span>
+        <span>Email</span>
+        <span>Perfil atual</span>
+        <span>Alterar perfil</span>
+    </div>
 
     {% for user in usuarios %}
-    <tr>
-        <td>{{ user.nome }}</td>
-        <td>{{ user.email }}</td>
-        <td>{{ user.perfil }}</td>
-        <td>
-            <form method="POST">
-                <input type="hidden" name="user_id" value="{{ user.id }}">
+    <article class="users-table users-table-row">
+        <div class="user-cell">
+            <div class="user-avatar user-avatar-light">{{ user.nome[0]|upper }}</div>
+            <strong>{{ user.nome }}</strong>
+        </div>
 
-                <select name="perfil">
-                    <option value="aluno">Aluno</option>
-                    <option value="monitor">Monitor</option>
-                    <option value="professor">Professor</option>
-                    <option value="admin">Admin</option>
-                </select>
+        <span class="user-email">{{ user.email }}</span>
 
-                <button type="submit">Atualizar</button>
-            </form>
-        </td>
-    </tr>
+        <span class="profile-badge profile-{{ user.perfil }}">{{ user.perfil }}</span>
+
+        <form class="profile-form" method="POST">
+            <input type="hidden" name="user_id" value="{{ user.id }}">
+            <select name="perfil">
+                <option value="aluno" {% if user.perfil == "aluno" %}selected{% endif %}>Aluno</option>
+                <option value="monitor" {% if user.perfil == "monitor" %}selected{% endif %}>Monitor</option>
+                <option value="professor" {% if user.perfil == "professor" %}selected{% endif %}>Professor</option>
+                <option value="admin" {% if user.perfil == "admin" %}selected{% endif %}>Admin</option>
+            </select>
+            <button type="submit">Atualizar</button>
+        </form>
+    </article>
     {% endfor %}
-</table>
+</section>
+{% else %}
+<section class="empty-state">
+    <h3>Nenhum usuário cadastrado</h3>
+    <p>Assim que houver contas no sistema, elas aparecerão nesta tela.</p>
+</section>
+{% endif %}
 {% endblock %}

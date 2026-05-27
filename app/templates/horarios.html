@@ -1,25 +1,84 @@
 {% extends "base.html" %}
 
+{% block page_title %}Horários{% endblock %}
+
 {% block content %}
-<h2>Horários de Monitoria</h2>
+{% set dias = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"] %}
 
-<a href="{{ url_for('main.novo_horario') }}">Novo horário</a>
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Agenda acadêmica</span>
+        <h2>Horários</h2>
+        <p>Consulte os horários de monitoria disponíveis por disciplina e monitor.</p>
+    </div>
 
-<hr>
+    {% if current_user.perfil in ["admin", "professor"] %}
+    <div class="page-actions">
+        <a class="btn btn-large" href="{{ url_for('main.novo_horario') }}">Novo horário</a>
+    </div>
+    {% endif %}
+</section>
+
+{% set total_capacidade = namespace(value=0) %}
+{% for horario in horarios %}
+    {% set total_capacidade.value = total_capacidade.value + horario.capacidade %}
+{% endfor %}
+
+<section class="summary-strip">
+    <div class="summary-item">
+        <span class="summary-kicker">Horários</span>
+        <strong>{{ horarios|length }}</strong>
+        <p>cadastrados</p>
+    </div>
+
+    <div class="summary-item">
+        <span class="summary-kicker">Capacidade</span>
+        <strong>{{ total_capacidade.value }}</strong>
+        <p>vagas totais</p>
+    </div>
+
+    <div class="summary-item">
+        <span class="summary-kicker">Agenda</span>
+        <strong>{{ horarios|length }}</strong>
+        <p>janelas disponíveis</p>
+    </div>
+</section>
 
 {% if horarios %}
-    <ul>
-        {% for horario in horarios %}
-            <li>
-                <strong>{{ horario.dia_semana }}</strong> -
-                {{ horario.hora_inicio }} às {{ horario.hora_fim }}<br>
-                Disciplina: {{ horario.monitoria.disciplina.nome }}<br>
-                Monitor: {{ horario.monitoria.monitor.nome }}
-            </li>
-            <br>
-        {% endfor %}
-    </ul>
+<div class="section-heading">
+    <h3>Agenda de monitorias</h3>
+    <p>Horários ativos organizados por disciplina e monitor responsável.</p>
+</div>
+
+<section class="modern-grid">
+    {% for horario in horarios %}
+    <article class="modern-card">
+        <div class="card-main">
+            <span class="code-badge">{{ horario.hora_inicio.strftime('%H:%M') }} às {{ horario.hora_fim.strftime('%H:%M') }}</span>
+            <h3>{{ dias[horario.dia_semana] }}</h3>
+        </div>
+
+        <div class="info-box">
+            <span>Disciplina</span>
+            <strong>{{ horario.monitoria.disciplina.nome }}</strong>
+        </div>
+
+        <div class="info-box">
+            <span>Monitor</span>
+            <strong>{{ horario.monitoria.monitor.nome }}</strong>
+        </div>
+
+        <div class="card-footer">
+            <span>Capacidade</span>
+            <strong>{{ horario.capacidade }}</strong>
+        </div>
+    </article>
+    {% endfor %}
+</section>
 {% else %}
-    <p>Nenhum horário cadastrado.</p>
+<section class="empty-state">
+    <h3>Nenhum horário cadastrado</h3>
+    <p>Cadastre horários para que os alunos possam agendar atendimentos.</p>
+</section>
 {% endif %}
 {% endblock %}

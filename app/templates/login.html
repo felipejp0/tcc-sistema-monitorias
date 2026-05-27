@@ -1,14 +1,79 @@
 {% extends "base.html" %}
 
 {% block content %}
-<h2>Login</h2>
+<section class="login-shell">
+    <aside class="login-side-panel">
+        <div class="login-side-brand">
+            <div class="auth-brand-mark auth-brand-mark-dark" aria-hidden="true">
+                <span class="brand-dot"></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+                <span></span>
+            </div>
+            <div>
+                <h1>Monitorias</h1>
+                <span>IFMG - Gestão Acadêmica</span>
+            </div>
+        </div>
 
-<form method="POST">
-    <input type="email" name="email" placeholder="Email" required><br><br>
-    <input type="password" name="senha" placeholder="Senha" required><br><br>
-    <button type="submit">Entrar</button>
-</form>
+        <nav class="login-side-nav" aria-label="Acessos do sistema">
+            <div class="login-nav-group">
+                <span>Acessos</span>
+                <a href="#">Login</a>
+                <a href="{{ url_for('main.cadastro') }}">Criar conta</a>
+            </div>
 
-<a href="/cadastro">Criar conta</a>
+            <div class="login-nav-group">
+                <span>Sistema</span>
+                <a href="#">Monitorias acadêmicas</a>
+                <a href="#">Agendamento de atendimentos</a>
+                <a href="#">Controle por perfil</a>
+            </div>
+        </nav>
+    </aside>
 
+    <main class="login-main-panel">
+        <div class="login-form-card">
+            <div class="login-card-brand">
+                <div class="auth-brand-mark" aria-hidden="true">
+                    <span class="brand-dot"></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                    <span></span>
+                </div>
+                <div>
+                    <h2>Monitorias</h2>
+                    <p>Sistema de Gerenciamento de Monitorias</p>
+                </div>
+            </div>
+
+            <form method="POST">
+                <label>Email</label>
+                <input type="email" name="email" placeholder="seu.email@instituicao.edu.br" required>
+
+                <label>Senha</label>
+                <input type="password" name="senha" placeholder="Digite sua senha" required>
+
+                <button type="submit">Acessar</button>
+            </form>
+
+            <p class="auth-link">
+                Ainda não tem conta?
+                <a href="{{ url_for('main.cadastro') }}">Criar conta</a>
+            </p>
+        </div>
+    </main>
+</section>
 {% endblock %}

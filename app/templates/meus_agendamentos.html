@@ -1,31 +1,107 @@
 {% extends "base.html" %}
 
+{% block page_title %}Meus agendamentos{% endblock %}
+
 {% block content %}
-<h2>Meus Agendamentos</h2>
+{% set dias = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"] %}
+{% set total_agendados = atendimentos | selectattr("status", "equalto", "Agendado") | list | length %}
+{% set total_realizados = atendimentos | selectattr("status", "equalto", "Realizado") | list | length %}
+{% set total_cancelados = atendimentos | selectattr("status", "equalto", "Cancelado") | list | length %}
+
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Área do aluno</span>
+        <h2>Meus agendamentos</h2>
+        <p>Acompanhe suas monitorias agendadas, realizadas ou canceladas em um só lugar.</p>
+    </div>
+</section>
+
+<section class="summary-strip">
+    <div class="summary-item">
+        <div>
+            <strong>{{ atendimentos|length }}</strong>
+            <span>Total de agendamentos</span>
+        </div>
+    </div>
+
+    <div class="summary-item">
+        <div>
+            <strong>{{ total_agendados }}</strong>
+            <span>Agendados</span>
+        </div>
+    </div>
+
+    <div class="summary-item">
+        <div>
+            <strong>{{ total_realizados }}</strong>
+            <span>Realizados</span>
+        </div>
+    </div>
+
+    <div class="summary-item">
+        <div>
+            <strong>{{ total_cancelados }}</strong>
+            <span>Cancelados</span>
+        </div>
+    </div>
+</section>
 
 {% if atendimentos %}
-    <table border="1">
-        <tr>
-            <th>Disciplina</th>
-            <th>Monitor</th>
-            <th>Dia</th>
-            <th>Horário</th>
-            <th>Dúvida</th>
-            <th>Status</th>
-        </tr>
+<section class="attendance-grid">
+    {% for atendimento in atendimentos %}
+    <article class="attendance-card">
+        <div class="attendance-card-header">
+            <div>
+                <span class="discipline-code">{{ atendimento.horario.monitoria.disciplina.codigo }}</span>
+                <h3>{{ atendimento.horario.monitoria.disciplina.nome }}</h3>
+            </div>
 
-        {% for atendimento in atendimentos %}
-        <tr>
-            <td>{{ atendimento.horario.monitoria.disciplina.nome }}</td>
-            <td>{{ atendimento.horario.monitoria.monitor.nome }}</td>
-            <td>{{ atendimento.horario.dia_semana }}</td>
-            <td>{{ atendimento.horario.hora_inicio }} às {{ atendimento.horario.hora_fim }}</td>
-            <td>{{ atendimento.descricao_duvida }}</td>
-            <td>{{ atendimento.status }}</td>
-        </tr>
-        {% endfor %}
-    </table>
+            {% if atendimento.status == "Agendado" %}
+                <span class="status-badge status-agendado">{{ atendimento.status }}</span>
+            {% elif atendimento.status == "Realizado" %}
+                <span class="status-badge status-realizado">{{ atendimento.status }}</span>
+            {% elif atendimento.status == "Cancelado" %}
+                <span class="status-badge status-cancelado">{{ atendimento.status }}</span>
+            {% else %}
+                <span class="status-badge">{{ atendimento.status }}</span>
+            {% endif %}
+        </div>
+
+        <div class="attendance-details">
+            <div>
+                <span>Monitor</span>
+                <strong>{{ atendimento.horario.monitoria.monitor.nome }}</strong>
+            </div>
+
+            <div>
+                <span>Dia e horário</span>
+                <strong>
+                    {{ dias[atendimento.horario.dia_semana] }} ·
+                    {{ atendimento.horario.hora_inicio.strftime('%H:%M') }} às
+                    {{ atendimento.horario.hora_fim.strftime('%H:%M') }}
+                </strong>
+            </div>
+        </div>
+
+        <div class="question-box">
+            <span>Dúvida informada</span>
+            <p>{{ atendimento.descricao_duvida }}</p>
+        </div>
+
+        <div class="attendance-card-footer">
+            {% if atendimento.status == "Agendado" %}
+                <a class="btn btn-small btn-danger" href="{{ url_for('main.cancelar_agendamento', atendimento_id=atendimento.id) }}">Cancelar agendamento</a>
+            {% else %}
+                <span class="muted-action">Nenhuma ação disponível</span>
+            {% endif %}
+        </div>
+    </article>
+    {% endfor %}
+</section>
 {% else %}
-    <p>Você ainda não possui agendamentos.</p>
+<section class="empty-state">
+    <h3>Nenhum agendamento encontrado</h3>
+    <p>Você ainda não possui atendimentos agendados.</p>
+</section>
 {% endif %}
 {% endblock %}

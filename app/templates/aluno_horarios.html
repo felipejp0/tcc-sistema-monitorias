@@ -1,43 +1,61 @@
 {% extends "base.html" %}
 
+{% block page_title %}Horários disponíveis{% endblock %}
+
 {% block content %}
-<h2>Horários de Monitoria Disponíveis</h2>
+{% set dias = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"] %}
+
+<section class="page-hero">
+    <div>
+        <span class="eyebrow">Área do aluno</span>
+        <h2>Horários disponíveis</h2>
+        <p>Escolha uma monitoria e realize seu agendamento.</p>
+    </div>
+</section>
 
 {% if horarios %}
-    <table border="1">
-        <tr>
-            <th>Disciplina</th>
-            <th>Monitor</th>
-            <th>Dia</th>
-            <th>Horário</th>
-            <th>Vagas</th>
-            <th>Ação</th>
-        </tr>
+<div class="section-heading">
+    <h3>Escolha um horario</h3>
+    <p>Monitorias com vagas disponiveis para agendamento.</p>
+</div>
 
-        {% for horario in horarios %}
-        <tr>
-            <td>{{ horario.monitoria.disciplina.nome }}</td>
-            <td>{{ horario.monitoria.monitor.nome }}</td>
-            <td>{{ horario.dia_semana }}</td>
-            <td>{{ horario.hora_inicio }} às {{ horario.hora_fim }}</td>
-            <td>
-                {{ horario.capacidade - horario.atendimentos|length }}
-                /
-                {{ horario.capacidade }}
-            </td>
-            <td>
-                {% if horario.capacidade - horario.atendimentos|length > 0 %}
-                    <a href="{{ url_for('main.agendar_atendimento', horario_id=horario.id) }}">
-                        Agendar
-                    </a>
-                {% else %}
-                    Lotado
-                {% endif %}
-            </td>
-        </tr>
-        {% endfor %}
-    </table>
+<section class="modern-grid">
+    {% for horario in horarios %}
+        {% set vagas = vagas_por_horario.get(horario.id, 0) %}
+
+        <article class="modern-card">
+            <div class="card-main">
+                <h3>{{ horario.monitoria.disciplina.nome }}</h3>
+                <span class="code-badge">{{ horario.monitoria.disciplina.codigo }}</span>
+            </div>
+
+            <div class="info-box">
+                <span>Monitor</span>
+                <strong>{{ horario.monitoria.monitor.nome }}</strong>
+            </div>
+
+            <div class="info-box">
+                <span>Horário</span>
+                <strong>{{ dias[horario.dia_semana] }} — {{ horario.hora_inicio.strftime('%H:%M') }} às {{ horario.hora_fim.strftime('%H:%M') }}</strong>
+            </div>
+
+            <div class="card-footer">
+                <span>Vagas disponíveis</span>
+                <strong>{{ vagas }}/{{ horario.capacidade }}</strong>
+            </div>
+
+            {% if vagas > 0 %}
+                <a class="btn" href="{{ url_for('main.agendar_atendimento', horario_id=horario.id) }}">Agendar</a>
+            {% else %}
+                <span class="badge badge-danger">Lotado</span>
+            {% endif %}
+        </article>
+    {% endfor %}
+</section>
 {% else %}
-    <p>Nenhum horário de monitoria disponível.</p>
+<section class="empty-state">
+    <h3>Nenhum horário disponível</h3>
+    <p>No momento não existem horários de monitoria cadastrados.</p>
+</section>
 {% endif %}
 {% endblock %}
