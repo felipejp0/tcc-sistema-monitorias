@@ -11,9 +11,17 @@
     </div>
 
     <div class="hero-panel hero-profile-panel">
-        <div class="hero-profile-placeholder" aria-hidden="true">
-            <span class="hero-profile-placeholder-icon">👤</span>
-        </div>
+        {% if usuario.foto_url %}
+            <img
+                class="hero-profile-photo"
+                src="{{ usuario.foto_url }}"
+                alt="Foto de {{ usuario.nome }}"
+            >
+        {% else %}
+            <div class="hero-profile-placeholder" aria-hidden="true">
+                <span class="hero-profile-placeholder-icon">👤</span>
+            </div>
+        {% endif %}
 
         <div class="hero-profile-info">
             <span>Perfil ativo</span>
