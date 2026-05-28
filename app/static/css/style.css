@@ -325,6 +325,44 @@ a {
     text-transform: capitalize;
 }
 
+.hero-profile-panel {
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    gap: 14px;
+}
+
+.hero-profile-photo {
+    width: 88px;
+    height: 88px;
+    border-radius: 50%;
+    object-fit: cover;
+    background: #ffffff;
+    border: 4px solid #ffffff;
+    box-shadow: 0 14px 32px rgba(16, 24, 40, 0.14);
+}
+
+.hero-profile-info {
+    display: grid;
+    gap: 4px;
+    justify-items: center;
+    min-width: 0;
+}
+
+.hero-profile-info strong {
+    margin-top: 0;
+}
+
+.hero-profile-info small {
+    max-width: 170px;
+    overflow: hidden;
+    color: var(--muted);
+    font-size: 12px;
+    font-weight: 700;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+}
+
 h2 {
     margin: 0;
     letter-spacing: 0;

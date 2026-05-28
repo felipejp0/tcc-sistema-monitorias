@@ -1,3 +1,4 @@
+import hashlib
 from datetime import datetime
 
 from flask_login import UserMixin
@@ -32,6 +33,12 @@ class Usuario(UserMixin, db.Model):
 
     def check_senha(self, senha):
         return check_password_hash(self.senha_hash, senha)
+
+    @property
+    def avatar_url(self):
+        email_normalizado = (self.email or "").strip().lower()
+        email_hash = hashlib.md5(email_normalizado.encode("utf-8")).hexdigest()
+        return f"https://www.gravatar.com/avatar/{email_hash}?s=220&d=identicon"
 
 
 class Disciplina(db.Model):
@@ -96,6 +103,10 @@ class HorarioMonitoria(db.Model):
     criado_em = db.Column(db.DateTime, nullable=False, default=datetime.utcnow)
 
     atendimentos = db.relationship("Atendimento", backref="horario", lazy=True)
+
+    @property
+    def dia_semana(self):
+        return self.data.weekday()
 
 
 class Atendimento(db.Model):

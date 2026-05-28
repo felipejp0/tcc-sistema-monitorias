@@ -10,9 +10,18 @@
         <p>Um painel simples para acompanhar monitorias, horários e atendimentos com clareza operacional.</p>
     </div>
 
-    <div class="hero-panel">
-        <span>Perfil ativo</span>
-        <strong>{{ usuario.perfil }}</strong>
+    <div class="hero-panel hero-profile-panel">
+        <img
+            class="hero-profile-photo"
+            src="{{ usuario.avatar_url }}"
+            alt="Foto de {{ usuario.nome }}"
+        >
+
+        <div class="hero-profile-info">
+            <span>Perfil ativo</span>
+            <strong>{{ usuario.perfil }}</strong>
+            <small>{{ usuario.email }}</small>
+        </div>
     </div>
 </section>
 
