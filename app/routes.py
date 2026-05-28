@@ -1,12 +1,12 @@
 from functools import wraps
 from datetime import datetime, date
 
-from flask import Blueprint, render_template, request, redirect, url_for, flash
+from flask import Blueprint, current_app, render_template, request, redirect, url_for, flash
 from flask_login import login_user, login_required, logout_user, current_user
 from sqlalchemy import or_
 
 from app.models import Usuario, Disciplina, Monitoria, HorarioMonitoria, Atendimento
-from app.extensions import db
+from app.extensions import db, oauth
 
 main = Blueprint("main", __name__)
 
@@ -30,7 +30,7 @@ def perfil_requerido(*perfis):
     return decorator
 
 
-def filtro_horarios_futuros():
+def filtro_horarios_nao_encerrados():
     agora = datetime.now()
     hoje = agora.date()
     hora_atual = agora.time()
@@ -38,6 +38,17 @@ def filtro_horarios_futuros():
     return or_(
         HorarioMonitoria.data > hoje,
         (HorarioMonitoria.data == hoje) & (HorarioMonitoria.hora_fim > hora_atual)
+    )
+
+
+def filtro_horarios_agendaveis():
+    agora = datetime.now()
+    hoje = agora.date()
+    hora_atual = agora.time()
+
+    return or_(
+        HorarioMonitoria.data > hoje,
+        (HorarioMonitoria.data == hoje) & (HorarioMonitoria.hora_inicio > hora_atual)
     )
 
 
@@ -66,10 +77,11 @@ def horario_tem_vaga(horario):
     return calcular_vagas_horario(horario) > 0
 
 
-def aluno_ja_agendou_horario(aluno_id, horario_id):
-    return Atendimento.query.filter_by(
-        aluno_id=aluno_id,
-        horario_id=horario_id
+def aluno_ja_tem_agendamento_ativo(aluno_id, horario_id):
+    return Atendimento.query.filter(
+        Atendimento.aluno_id == aluno_id,
+        Atendimento.horario_id == horario_id,
+        Atendimento.status != "Cancelado"
     ).first()
 
 
@@ -150,6 +162,63 @@ def login():
         flash("E-mail ou senha inválidos.")
 
     return render_template("login.html")
+
+
+@main.route("/login/google")
+def login_google():
+    if not current_app.config.get("GOOGLE_CLIENT_ID") or not current_app.config.get("GOOGLE_CLIENT_SECRET"):
+        flash("Login com Google ainda não está configurado.")
+        return redirect(url_for("main.login"))
+
+    redirect_uri = url_for("main.login_google_callback", _external=True)
+    return oauth.google.authorize_redirect(redirect_uri)
+
+
+@main.route("/login/google/callback")
+def login_google_callback():
+    try:
+        token = oauth.google.authorize_access_token()
+        user_info = token.get("userinfo") or oauth.google.userinfo()
+    except Exception:
+        flash("Não foi possível concluir o login com Google.")
+        return redirect(url_for("main.login"))
+
+    google_id = user_info.get("sub")
+    email = user_info.get("email", "").strip().lower()
+    nome = user_info.get("name") or email.split("@")[0]
+    foto_url = user_info.get("picture")
+
+    if not email:
+        flash("Não foi possível obter o e-mail da conta Google.")
+        return redirect(url_for("main.login"))
+
+    usuario = Usuario.query.filter_by(email=email).first()
+
+    if usuario:
+        if not usuario.ativo:
+            flash("Usuário inativo. Entre em contato com a administração.")
+            return redirect(url_for("main.login"))
+
+        usuario.google_id = usuario.google_id or google_id
+        usuario.foto_url = foto_url or usuario.foto_url
+        usuario.auth_provider = usuario.auth_provider or "google"
+    else:
+        usuario = Usuario(
+            nome=nome,
+            email=email,
+            perfil="aluno",
+            ativo=True,
+            google_id=google_id,
+            foto_url=foto_url,
+            auth_provider="google"
+        )
+        db.session.add(usuario)
+
+    db.session.commit()
+    login_user(usuario)
+
+    flash("Login com Google realizado com sucesso.")
+    return redirect(url_for("main.dashboard"))
 
 
 @main.route("/logout")
@@ -388,7 +457,7 @@ def nova_monitoria():
 @login_required
 @perfil_requerido("professor", "admin", "monitor")
 def listar_horarios():
-    filtro_validos = filtro_horarios_futuros()
+    filtro_validos = filtro_horarios_nao_encerrados()
 
     if current_user.perfil == "admin":
         horarios = HorarioMonitoria.query.filter(
@@ -495,7 +564,7 @@ def novo_horario():
 @perfil_requerido("aluno")
 def aluno_horarios():
     horarios = HorarioMonitoria.query.filter(
-        filtro_horarios_futuros()
+        filtro_horarios_agendaveis()
     ).order_by(
         HorarioMonitoria.data,
         HorarioMonitoria.hora_inicio
@@ -529,8 +598,8 @@ def agendar_atendimento(horario_id):
         flash("Não é possível agendar um atendimento que já começou ou já passou.")
         return redirect(url_for("main.aluno_horarios"))
 
-    if aluno_ja_agendou_horario(current_user.id, horario.id):
-        flash("Você já possui um atendimento registrado para este horário.")
+    if aluno_ja_tem_agendamento_ativo(current_user.id, horario.id):
+        flash("Você já possui um atendimento ativo para este horário.")
         return redirect(url_for("main.aluno_horarios"))
 
     if calcular_vagas_horario(horario) <= 0:
@@ -548,14 +617,20 @@ def agendar_atendimento(horario_id):
             flash("Não é possível agendar um atendimento que já começou ou já passou.")
             return redirect(url_for("main.aluno_horarios"))
 
-        existe_ativo = Atendimento.query.filter(
-            Atendimento.aluno_id == current_user.id,
-            Atendimento.horario_id == horario.id,
-        ).first()
+        existe_ativo = aluno_ja_tem_agendamento_ativo(
+            current_user.id,
+            horario.id
+        )
 
         if existe_ativo:
             flash("Você já está inscrito neste horário.")
             return redirect(url_for("main.aluno_horarios"))
+
+        atendimento_cancelado = Atendimento.query.filter(
+            Atendimento.aluno_id == current_user.id,
+            Atendimento.horario_id == horario.id,
+            Atendimento.status == "Cancelado"
+        ).first()
 
         conflito_horario = Atendimento.query.join(HorarioMonitoria).filter(
             Atendimento.aluno_id == current_user.id,
@@ -572,6 +647,15 @@ def agendar_atendimento(horario_id):
         if calcular_vagas_horario(horario) <= 0:
             flash("Este horário já está lotado.")
             return redirect(url_for("main.aluno_horarios"))
+
+        if atendimento_cancelado:
+            atendimento_cancelado.status = "Agendado"
+            atendimento_cancelado.descricao_duvida = descricao_duvida
+            atendimento_cancelado.atualizado_em = datetime.utcnow()
+            db.session.commit()
+
+            flash("Atendimento reagendado com sucesso!")
+            return redirect(url_for("main.meus_agendamentos"))
 
         atendimento = Atendimento(
             descricao_duvida=descricao_duvida,

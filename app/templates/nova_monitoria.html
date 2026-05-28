@@ -1,14 +1,47 @@
 {% extends "base.html" %}
+
+{% block page_title %}Nova monitoria{% endblock %}
+
 {% block content %}
-<h2>Nova Monitoria</h2>
-<form method="POST">
-    <label>Descrição:</label><br>
-    <textarea name="descricao" placeholder="Descrição da monitoria" required></textarea><br><br>
-    <label>Disciplina:</label><br>
-    <select name="disciplina" required><option value="">Selecione</option>{% for d in disciplinas %}<option value="{{ d.id }}">{{ d.nome }}</option>{% endfor %}</select><br><br>
-    <label>Monitor:</label><br>
-    <select name="monitor" required><option value="">Selecione</option>{% for u in usuarios %}<option value="{{ u.id }}">{{ u.nome }} - {{ u.email }}</option>{% endfor %}</select><br><br>
-    <button type="submit">Criar Monitoria</button>
-</form>
-<br><a href="{{ url_for('main.listar_monitorias') }}">Voltar para monitorias</a>
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Gestão acadêmica</span>
+        <h2>Nova monitoria</h2>
+        <p>Vincule uma disciplina a um monitor responsável.</p>
+    </div>
+</section>
+
+<section class="modern-card">
+    <form method="POST">
+        <div class="info-box">
+            <label>Descrição</label>
+            <textarea name="descricao" placeholder="Descrição da monitoria" required></textarea>
+        </div>
+
+        <div class="info-box">
+            <label>Disciplina</label>
+            <select name="disciplina" required>
+                <option value="">Selecione</option>
+                {% for d in disciplinas %}
+                    <option value="{{ d.id }}">{{ d.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="info-box">
+            <label>Monitor</label>
+            <select name="monitor" required>
+                <option value="">Selecione</option>
+                {% for u in usuarios %}
+                    <option value="{{ u.id }}">{{ u.nome }} - {{ u.email }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="attendance-card-footer">
+            <a class="btn btn-small btn-danger" href="{{ url_for('main.listar_monitorias') }}">Cancelar</a>
+            <button class="btn btn-large" type="submit">Criar monitoria</button>
+        </div>
+    </form>
+</section>
 {% endblock %}

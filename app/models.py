@@ -13,7 +13,10 @@ class Usuario(UserMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     nome = db.Column(db.String(120), nullable=False)
     email = db.Column(db.String(120), unique=True, nullable=False, index=True)
-    senha_hash = db.Column(db.String(255), nullable=False)
+    senha_hash = db.Column(db.String(255), nullable=True)
+    google_id = db.Column(db.String(120), unique=True, nullable=True, index=True)
+    foto_url = db.Column(db.String(500), nullable=True)
+    auth_provider = db.Column(db.String(30), nullable=False, default="local")
 
     perfil = db.Column(
         db.Enum("aluno", "monitor", "professor", "admin", name="perfil_usuario"),
@@ -32,10 +35,15 @@ class Usuario(UserMixin, db.Model):
         self.senha_hash = generate_password_hash(senha)
 
     def check_senha(self, senha):
+        if not self.senha_hash:
+            return False
         return check_password_hash(self.senha_hash, senha)
 
     @property
     def avatar_url(self):
+        if self.foto_url:
+            return self.foto_url
+
         email_normalizado = (self.email or "").strip().lower()
         email_hash = hashlib.md5(email_normalizado.encode("utf-8")).hexdigest()
         return f"https://www.gravatar.com/avatar/{email_hash}?s=220&d=identicon"

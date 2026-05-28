@@ -740,6 +740,19 @@ p {
     background: #106a22;
 }
 
+.btn-google {
+    width: 100%;
+    margin-top: 10px;
+    background: #ffffff;
+    color: var(--text);
+    border: 1px solid var(--line);
+}
+
+.btn-google:hover {
+    background: var(--surface-soft);
+    color: var(--text);
+}
+
 .auth-link {
     margin: 20px 0 0;
     color: #667085;

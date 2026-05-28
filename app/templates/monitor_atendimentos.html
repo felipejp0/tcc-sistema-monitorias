@@ -3,7 +3,7 @@
 {% block page_title %}Atendimentos{% endblock %}
 
 {% block content %}
-{% set dias = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado"] %}
+{% set dias = ["Segunda-feira", "Terça-feira", "Quarta-feira", "Quinta-feira", "Sexta-feira", "Sábado", "Domingo"] %}
 {% set total_agendados = atendimentos | selectattr("status", "equalto", "Agendado") | list | length %}
 {% set total_realizados = atendimentos | selectattr("status", "equalto", "Realizado") | list | length %}
 {% set total_cancelados = atendimentos | selectattr("status", "equalto", "Cancelado") | list | length %}

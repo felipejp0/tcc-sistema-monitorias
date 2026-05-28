@@ -1,19 +1,47 @@
 {% extends "base.html" %}
+
+{% block page_title %}Novo horário{% endblock %}
+
 {% block content %}
-<h2>Novo Horário de Monitoria</h2>
-<form method="POST">
-    <label>Data:</label><br>
-    <input type="date" name="data" required><br><br>
-    <label>Hora de início:</label><br>
-    <input type="time" name="hora_inicio" required><br><br>
-    <label>Hora de fim:</label><br>
-    <input type="time" name="hora_fim" required><br><br>
-    <label>Monitoria:</label><br>
-    <select name="monitoria" required>
-        <option value="">Selecione</option>
-        {% for monitoria in monitorias %}<option value="{{ monitoria.id }}">{{ monitoria.disciplina.nome }} - {{ monitoria.monitor.nome }}</option>{% endfor %}
-    </select><br><br>
-    <button type="submit">Salvar horário</button>
-</form>
-<br><a href="{{ url_for('main.listar_horarios') }}">Voltar para horários</a>
+<section class="page-header">
+    <div>
+        <span class="eyebrow">Agenda acadêmica</span>
+        <h2>Novo horário</h2>
+        <p>Cadastre uma janela de atendimento para uma monitoria.</p>
+    </div>
+</section>
+
+<section class="modern-card">
+    <form method="POST">
+        <div class="info-box">
+            <label>Data</label>
+            <input type="date" name="data" required>
+        </div>
+
+        <div class="info-box">
+            <label>Hora de início</label>
+            <input type="time" name="hora_inicio" required>
+        </div>
+
+        <div class="info-box">
+            <label>Hora de fim</label>
+            <input type="time" name="hora_fim" required>
+        </div>
+
+        <div class="info-box">
+            <label>Monitoria</label>
+            <select name="monitoria" required>
+                <option value="">Selecione</option>
+                {% for monitoria in monitorias %}
+                    <option value="{{ monitoria.id }}">{{ monitoria.disciplina.nome }} - {{ monitoria.monitor.nome }}</option>
+                {% endfor %}
+            </select>
+        </div>
+
+        <div class="attendance-card-footer">
+            <a class="btn btn-small btn-danger" href="{{ url_for('main.listar_horarios') }}">Cancelar</a>
+            <button class="btn btn-large" type="submit">Salvar horário</button>
+        </div>
+    </form>
+</section>
 {% endblock %}
