@@ -34,7 +34,7 @@
 
         <nav class="menu">
             <span class="menu-label">Principal</span>
-            <a href="{{ url_for('main.dashboard') }}">Dashboard</a>
+            <a href="{{ url_for('main.dashboard') }}">Tela inicial</a>
 
             {% if current_user.perfil in ["admin", "professor"] %}
                 <span class="menu-label">Gestão</span>
