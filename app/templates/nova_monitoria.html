@@ -28,15 +28,22 @@
             </select>
         </div>
 
-        <div class="info-box">
-            <label>Monitor</label>
-            <select name="monitor" required>
-                <option value="">Selecione</option>
-                {% for u in usuarios %}
-                    <option value="{{ u.id }}">{{ u.nome }} - {{ u.email }}</option>
-                {% endfor %}
-            </select>
-        </div>
+        {% if current_user.perfil != "monitor" %}
+            <div class="info-box">
+                <label>Monitor</label>
+                <select name="monitor" required>
+                    <option value="">Selecione</option>
+                    {% for u in usuarios %}
+                        <option value="{{ u.id }}">{{ u.nome }} - {{ u.email }}</option>
+                    {% endfor %}
+                </select>
+            </div>
+        {% else %}
+            <div class="info-box">
+                <span>Monitor responsável</span>
+                <strong>{{ current_user.nome }}</strong>
+            </div>
+        {% endif %}
 
         <div class="attendance-card-footer">
             <a class="btn btn-small btn-danger" href="{{ url_for('main.listar_monitorias') }}">Cancelar</a>

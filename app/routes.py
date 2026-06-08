@@ -401,14 +401,16 @@ def listar_monitorias():
 
 @main.route("/monitorias/nova", methods=["GET", "POST"])
 @login_required
-@perfil_requerido("professor", "admin")
+@perfil_requerido("professor", "admin", "monitor")
 def nova_monitoria():
     if current_user.perfil == "admin":
         disciplinas = Disciplina.query.order_by(Disciplina.nome).all()
-    else:
+    elif current_user.perfil == "professor":
         disciplinas = Disciplina.query.filter_by(
             professor_id=current_user.id
         ).order_by(Disciplina.nome).all()
+    else:
+        disciplinas = Disciplina.query.order_by(Disciplina.nome).all()
 
     usuarios = Usuario.query.filter(
         Usuario.perfil == "monitor",
@@ -418,14 +420,20 @@ def nova_monitoria():
     if request.method == "POST":
         descricao = request.form["descricao"].strip()
         disciplina_id = request.form["disciplina"]
-        monitor_id = request.form["monitor"]
+        if current_user.perfil == "monitor":
+            if not current_user.ativo or current_user.perfil != "monitor":
+                flash("Monitor inválido.")
+                return redirect(url_for("main.nova_monitoria"))
+            monitor_id = current_user.id
+        else:
+            monitor_id = request.form["monitor"]
 
         disciplina = Disciplina.query.get(disciplina_id)
         if not disciplina:
             flash("Disciplina inválida.")
             return redirect(url_for("main.nova_monitoria"))
 
-        if current_user.perfil != "admin" and disciplina.professor_id != current_user.id:
+        if current_user.perfil == "professor" and disciplina.professor_id != current_user.id:
             flash("Você não pode criar monitoria para uma disciplina que não é sua.")
             return redirect(url_for("main.nova_monitoria"))
 

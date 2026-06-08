@@ -139,6 +139,17 @@
         </a>
 
     {% elif usuario.perfil == "monitor" %}
+        <a class="modern-card" href="{{ url_for('main.nova_monitoria') }}">
+            <div class="card-main">
+                <span class="code-badge">Monitoria</span>
+                <h3>Criar monitoria</h3>
+            </div>
+            <div class="info-box">
+                <span>Cadastro</span>
+                <strong>Vincular uma disciplina à sua monitoria</strong>
+            </div>
+        </a>
+
         <a class="modern-card" href="{{ url_for('main.monitor_atendimentos') }}">
             <div class="card-main">
                 <span class="code-badge">Monitor</span>
