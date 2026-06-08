@@ -11,37 +11,45 @@
     </div>
 </section>
 
-<section class="modern-card">
-    <form method="POST">
-        <div class="info-box">
-            <label>Data</label>
-            <input type="date" name="data" required>
-        </div>
+{% if not monitorias and current_user.perfil == "monitor" %}
+    <section class="empty-state">
+        <h3>Nenhuma monitoria vinculada</h3>
+        <p>Crie uma monitoria antes de cadastrar horários de atendimento.</p>
+        <a class="btn" href="{{ url_for('main.nova_monitoria') }}">Criar monitoria</a>
+    </section>
+{% else %}
+    <section class="modern-card">
+        <form method="POST">
+            <div class="info-box">
+                <label>Data</label>
+                <input type="date" name="data" required>
+            </div>
 
-        <div class="info-box">
-            <label>Hora de início</label>
-            <input type="time" name="hora_inicio" required>
-        </div>
+            <div class="info-box">
+                <label>Hora de início</label>
+                <input type="time" name="hora_inicio" required>
+            </div>
 
-        <div class="info-box">
-            <label>Hora de fim</label>
-            <input type="time" name="hora_fim" required>
-        </div>
+            <div class="info-box">
+                <label>Hora de fim</label>
+                <input type="time" name="hora_fim" required>
+            </div>
 
-        <div class="info-box">
-            <label>Monitoria</label>
-            <select name="monitoria" required>
-                <option value="">Selecione</option>
-                {% for monitoria in monitorias %}
-                    <option value="{{ monitoria.id }}">{{ monitoria.disciplina.nome }} - {{ monitoria.monitor.nome }}</option>
-                {% endfor %}
-            </select>
-        </div>
+            <div class="info-box">
+                <label>Monitoria</label>
+                <select name="monitoria" required>
+                    <option value="">Selecione</option>
+                    {% for monitoria in monitorias %}
+                        <option value="{{ monitoria.id }}">{{ monitoria.disciplina.nome }} - {{ monitoria.monitor.nome }}</option>
+                    {% endfor %}
+                </select>
+            </div>
 
-        <div class="attendance-card-footer">
-            <a class="btn btn-small btn-danger" href="{{ url_for('main.listar_horarios') }}">Cancelar</a>
-            <button class="btn btn-large" type="submit">Salvar horário</button>
-        </div>
-    </form>
-</section>
+            <div class="attendance-card-footer">
+                <a class="btn btn-small btn-danger" href="{{ url_for('main.listar_horarios') }}">Cancelar</a>
+                <button class="btn btn-large" type="submit">Salvar horário</button>
+            </div>
+        </form>
+    </section>
+{% endif %}
 {% endblock %}

@@ -54,8 +54,9 @@
                 <span class="menu-label">Monitor</span>
                 <a href="{{ url_for('main.listar_monitorias') }}">Minhas monitorias</a>
                 <a href="{{ url_for('main.nova_monitoria') }}">Nova monitoria</a>
-                <a href="{{ url_for('main.monitor_atendimentos') }}">Meus atendimentos</a>
                 <a href="{{ url_for('main.listar_horarios') }}">Meus horários</a>
+                <a href="{{ url_for('main.novo_horario') }}">Novo horário</a>
+                <a href="{{ url_for('main.monitor_atendimentos') }}">Meus atendimentos</a>
             {% endif %}
 
             {% if current_user.perfil == "admin" %}

@@ -498,13 +498,17 @@ def listar_horarios():
 
 @main.route("/horarios/novo", methods=["GET", "POST"])
 @login_required
-@perfil_requerido("professor", "admin")
+@perfil_requerido("professor", "admin", "monitor")
 def novo_horario():
     if current_user.perfil == "admin":
         monitorias = Monitoria.query.all()
-    else:
+    elif current_user.perfil == "professor":
         monitorias = Monitoria.query.join(Disciplina).filter(
             Disciplina.professor_id == current_user.id
+        ).all()
+    else:
+        monitorias = Monitoria.query.filter_by(
+            monitor_id=current_user.id
         ).all()
 
     if request.method == "POST":
@@ -524,8 +528,12 @@ def novo_horario():
             flash("Monitoria inválida.")
             return redirect(url_for("main.novo_horario"))
 
-        if current_user.perfil != "admin" and monitoria.disciplina.professor_id != current_user.id:
+        if current_user.perfil == "professor" and monitoria.disciplina.professor_id != current_user.id:
             flash("Você não pode criar horário para uma monitoria que não pertence às suas disciplinas.")
+            return redirect(url_for("main.novo_horario"))
+
+        if current_user.perfil == "monitor" and monitoria.monitor_id != current_user.id:
+            flash("Você não pode criar horário para uma monitoria que não pertence a você.")
             return redirect(url_for("main.novo_horario"))
 
         if data < date.today():
